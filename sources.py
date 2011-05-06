@@ -13,7 +13,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Epic Media Pulse.  If not, see <http://www.gnu.org/licenses/>.
 
-import pickle,glob
+import pickle, glob
+import mutagen
+from mutagen.easyid3 import EasyID3
+from mutagen.mp3 import MP3
 
 class local:
     
@@ -44,9 +47,15 @@ class local:
     @classmethod
     def dbimport (self, folder, db):
         '''Import all mp3(for now) files from a folder to the database'''
+        
         for filename in glob.glob(folder + '/*.mp3'):
-            #TODO : remplace this stupid shit with actual ID fetching
-            db[filename] = {'artist' : 'koolfy', 'title' : 'kakalool'}
+            try:
+                tags = MP3(filename, ID3=EasyID3)
+            except mutagen.mp3.HeaderNotFoundError:
+                print('ERROR : ' + filename + ' has no ID3 tag, skipping...')
+            else:
+                db[filename] = tags
+        
         return db
 
 
@@ -55,7 +64,7 @@ if __name__ == '__main__':
     print('> creating database')
     db = local.dbcreate('database')
     print('> initializing database')
-    db['koolfy - kakalol.mp3'] = {'artist' : 'koolfy', 'title' : 'kakalol'}
+    db['koolfy - kakalol.mp3'] = {'artist' : ['koolfy'], 'title' : ['kakalol']}
     print('> saving database')
     local.dbsave('savedDatabase', db)
     print('> loading database')
@@ -65,12 +74,11 @@ if __name__ == '__main__':
     for key in db2:
         print('file name : ' + key)
         for (fname, fvalue) in db2[key].items():
-            print('-- ' + fname + ' : ' + fvalue)
-    print('> importing files')
-    db2 = local.dbimport('music', db2)
+            print('-- ' + fname + ' : ' + fvalue[0])
+    print('\n> importing files')
+    db3 = local.dbimport('music', db2)
     print('this is the new database :')
-    for key in db2:
+    for key in db3:
         print('file name : ' + key)
-        for (fname, fvalue) in db2[key].items():
-            print('-- ' + fname + ' : ' + fvalue)
-
+        for (fname, fvalue) in db3[key].items():
+            print('-- ' + fname + ' : ' + fvalue[0])
