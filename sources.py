@@ -15,8 +15,6 @@
 
 import pickle, glob
 import mutagen
-from mutagen.easyid3 import EasyID3
-from mutagen.mp3 import MP3
 
 class local:
     
