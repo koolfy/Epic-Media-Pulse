@@ -1,3 +1,5 @@
+#  Copyright 2011 Daniel "koolfy" Faucon <koolfy@geekmx.org>
+#
 #  This file is part of Epic Media Pulse.
 #
 #  Epic Media Pulse is free software: you can redistribute it and/or modify
