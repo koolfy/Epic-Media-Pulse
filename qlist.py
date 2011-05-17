@@ -51,7 +51,9 @@ class qlist:
 if __name__ == '__main__':
     testlist = [ "kaka", "lol", "proute", "toast" ]
     qlist = qlist.generateFromList(testlist)
-    print (qlist)
-    print (qlist.next)
-    qleast = qlist.next
-    print (qleast.next)
+    while (qlist.id != None):
+        print qlist
+        if(qlist.next != None):
+            qlist= qlist.next
+        else:
+            break
