@@ -17,10 +17,12 @@
 
 class song:
     '''node structure for queue lists'''
-    def __init__(self, id=None, prev=None, next=None):
+    def __init__(self, id=None, prev=None, next=None, status=None, belongs_to=None):
         self.id = id
         self.next= next
         self.prev = prev
+        self.status = status
+        self.belongs_to = belongs_to
 
     def __str__(self):
         return str(self.id)
