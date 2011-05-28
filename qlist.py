@@ -32,6 +32,29 @@ class qlist:
     '''queue lists for the player to browse'''
 
     @classmethod
+    def appendQlist(self, song, list):
+        '''add a list of songs right next to an entry from the playlist'''
+        nextNode = song.next
+        qlistHead = qlist.generateFromList(list)
+        qlistTail = qlist.getLastNodeFromQlist(qlistHead)
+
+        song.next = qlistHead
+        qlistTail.next = nextNode
+
+        return song
+
+
+    @classmethod
+    def getLastNodeFromQlist(self, song):
+        '''return the tail of a linked list'''
+        node = song
+        
+        while(node.next != None):
+            node = node.next
+        return node
+    
+    
+    @classmethod
     def generateFromList(self, list):
         '''generate a linked list from a regular list'''    
         previous= None
@@ -52,10 +75,21 @@ class qlist:
 #only to test the linked list implementation
 if __name__ == '__main__':
     testlist = [ "kaka", "lol", "proute", "toast" ]
-    qlist = qlist.generateFromList(testlist)
-    while (qlist.id != None):
-        print qlist
-        if(qlist.next != None):
-            qlist= qlist.next
+    qlist1 = qlist.generateFromList(testlist)
+    while (qlist1.id != None):
+        print qlist1
+        if(qlist1.next != None):
+            qlist1= qlist1.next
+        else:
+            break
+    
+    testlist2 = [ "1", "2", "3" ]
+    qlist2 = qlist.appendQlist(qlist.generateFromList(testlist), testlist2)
+
+    print "\n testing appendQlist()\n"
+    while (qlist2.id != None):
+        print qlist2
+        if(qlist2.next != None):
+            qlist2= qlist2.next
         else:
             break
