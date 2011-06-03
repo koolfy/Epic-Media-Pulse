@@ -39,7 +39,7 @@ class playback:
         #create generic decoder
         self.decoder = gst.element_factory_make("decodebin2", "audio-decoder")
         #call OnDynamicPad to link it when pads are ready.
-        self.decoder.connect("new-decoded-pad", self.OnDecoderDPad)
+        self.decoder.connect("new-decoded-pad", self.__OnDecoderDPad)
         self.pipeline.add(self.decoder)
         
 
@@ -59,7 +59,7 @@ class playback:
         self.conv.link(self.sink)
 
 
-    def OnDecoderDPad(self, dbin, pad, islast):
+    def __OnDecoderDPad(self, dbin, pad, islast):
         '''called when decoder's dyn pads are ready'''
         pad.link(self.conv.get_pad("sink"))
 
