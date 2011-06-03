@@ -16,10 +16,10 @@
 #  along with Epic Media Pulse.  If not, see <http://www.gnu.org/licenses/>.
 #!/usr/bin/env python
 
-import time
+import time #only used for testing.
 
 import gobject
-gobject.threads_init()
+gobject.threads_init() #dynamic pads will not work without this.
 
 import pygst
 pygst.require("0.10")
@@ -73,15 +73,38 @@ class playback:
     def SetPlay(self):
         self.pipeline.set_state(gst.STATE_PLAYING)
 
+    def SetPause(self):
+        self.pipeline.set_state(gst.STATE_PAUSED)
+
+    def SetStop(self):
+        self.pipeline.set_state(gst.STATE_READY)
+
+    def SetClean(self):
+        '''Set the pipeline to a state where everything is cleared and free.'''
+        self.pipeline.set_state(gst.STATE_NULL)
+
+#Ugly testing, will be cleaned up... eventually.
 if __name__ == '__main__':
 
     player = playback()
-    filepath = "/home/koolfy/Son/2001.ogg"
+    filepath = "2001.ogg" # Strauss - Also Sprach Zarathustra
     player.SetSong(filepath)
-    
+   
+    print "Playing..."
     player.SetPlay()
+    time.sleep(25)
+    
+    print "Pausing..."
+    player.SetPause()
+    time.sleep(3)
+    
+    print "Resuming..."
+    player.SetPlay()
+    time.sleep(10)
+    
+    print "stopping."
+    player.SetStop()
+    time.sleep(2)
 
-    while(1):
-        time.sleep(1) 
-
-        
+    print "Cleaning the pipes and exiting."
+    player.SetClean()
