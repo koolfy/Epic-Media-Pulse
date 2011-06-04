@@ -14,11 +14,6 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with Epic Media Pulse.  If not, see <http://www.gnu.org/licenses/>.
-#!/usr/bin/env python
-
-#this should be moved to daemon.py
-import gobject
-gobject.threads_init() #dynamic pads will not work without this.
 
 import pygst
 pygst.require("0.10")
@@ -58,28 +53,10 @@ class playback:
         #link audio converter -> sink
         self.conv.link(self.sink)
 
-        # !!! THIS ALONG WITH OTHER EVENT HANDLING SHOULD AND
-        # !!! WILL BE MOVED TO daemon.py A.S.A.P.
-        #Create the gobject mainloop for bus events watching
-        self.mainloop = gobject.MainLoop()
-
-        #Create event watching bus.
-        self.bus =  self.pipeline.get_bus()
-        self.bus.add_signal_watch()
-        self.bus.connect("message", self.__On_message)
-
     #This does not need the mainloop and can be left in playback.py
     def __OnDecoderDPad(self, dbin, pad, islast):
         '''called when decoder's dyn pads are ready'''
         pad.link(self.conv.get_pad("sink"))
-
-    #this, OTOH has to GTFO and move to daemon.py when ready.
-    def __On_message(self, bus, message):
-        type = message.type
-        #testing handling, only cleaning nicely for now.
-        if (type == gst.MESSAGE_EOS):
-            print "File ended.\ncleaning."
-            self.SetClean()
 
     #Methods used to interact with playback
 
@@ -89,7 +66,6 @@ class playback:
 
     def SetPlay(self):
         self.pipeline.set_state(gst.STATE_PLAYING)
-        self.mainloop.run() #initialize bus event loop
 
     def SetPause(self):
         self.pipeline.set_state(gst.STATE_PAUSED)
@@ -100,14 +76,3 @@ class playback:
     def SetClean(self):
         '''Set the pipeline to a state where everything is cleared and free.'''
         self.pipeline.set_state(gst.STATE_NULL)
-        self.mainloop.quit() #destroy bus event loop
-
-#Ugly testing, will be cleaned up... eventually.
-if __name__ == '__main__':
-
-    player = playback()
-    filepath = "2001.ogg" # Strauss - Also Sprach Zarathustra
-    player.SetSong(filepath)
-   
-    print "Playing..."
-    player.SetPlay()
