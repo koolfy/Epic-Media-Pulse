@@ -16,8 +16,7 @@
 #  along with Epic Media Pulse.  If not, see <http://www.gnu.org/licenses/>.
 #!/usr/bin/env python
 
-import time #only used for testing.
-
+#this should be moved to daemon.py
 import gobject
 gobject.threads_init() #dynamic pads will not work without this.
 
@@ -32,6 +31,8 @@ class playback:
         #create pipeline (container for the playback chain)
         self.pipeline = gst.Pipeline("mypipeline")
         
+        #building that playback chain :
+
         #create source
         self.source = gst.element_factory_make("filesrc", "file-source")
         self.pipeline.add(self.source)
@@ -40,13 +41,12 @@ class playback:
         self.decoder = gst.element_factory_make("decodebin2", "audio-decoder")
         #call OnDynamicPad to link it when pads are ready.
         self.decoder.connect("new-decoded-pad", self.__OnDecoderDPad)
-        self.pipeline.add(self.decoder)
-        
+        self.pipeline.add(self.decoder) 
 
         #link source -> decoder
         self.source.link(self.decoder)
 
-        #create audio converter, can't link it to decoder yet. ('cause of dynamic pads)
+        #create audio converter, can't link it to decoder yet. (of dynamic pads)
         self.conv = gst.element_factory_make("audioconvert", "converter")
         self.pipeline.add(self.conv)
 
@@ -58,11 +58,28 @@ class playback:
         #link audio converter -> sink
         self.conv.link(self.sink)
 
+        # !!! THIS ALONG WITH OTHER EVENT HANDLING SHOULD AND
+        # !!! WILL BE MOVED TO daemon.py A.S.A.P.
+        #Create the gobject mainloop for bus events watching
+        self.mainloop = gobject.MainLoop()
 
+        #Create event watching bus.
+        self.bus =  self.pipeline.get_bus()
+        self.bus.add_signal_watch()
+        self.bus.connect("message", self.__On_message)
+
+    #This does not need the mainloop and can be left in playback.py
     def __OnDecoderDPad(self, dbin, pad, islast):
         '''called when decoder's dyn pads are ready'''
         pad.link(self.conv.get_pad("sink"))
 
+    #this, OTOH has to GTFO and move to daemon.py when ready.
+    def __On_message(self, bus, message):
+        type = message.type
+        #testing handling, only cleaning nicely for now.
+        if (type == gst.MESSAGE_EOS):
+            print "File ended.\ncleaning."
+            self.SetClean()
 
     #Methods used to interact with playback
 
@@ -72,6 +89,7 @@ class playback:
 
     def SetPlay(self):
         self.pipeline.set_state(gst.STATE_PLAYING)
+        self.mainloop.run() #initialize bus event loop
 
     def SetPause(self):
         self.pipeline.set_state(gst.STATE_PAUSED)
@@ -82,6 +100,7 @@ class playback:
     def SetClean(self):
         '''Set the pipeline to a state where everything is cleared and free.'''
         self.pipeline.set_state(gst.STATE_NULL)
+        self.mainloop.quit() #destroy bus event loop
 
 #Ugly testing, will be cleaned up... eventually.
 if __name__ == '__main__':
@@ -92,19 +111,3 @@ if __name__ == '__main__':
    
     print "Playing..."
     player.SetPlay()
-    time.sleep(25)
-    
-    print "Pausing..."
-    player.SetPause()
-    time.sleep(3)
-    
-    print "Resuming..."
-    player.SetPlay()
-    time.sleep(10)
-    
-    print "stopping."
-    player.SetStop()
-    time.sleep(2)
-
-    print "Cleaning the pipes and exiting."
-    player.SetClean()
