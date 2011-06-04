@@ -15,39 +15,41 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Epic Media Pulse.  If not, see <http://www.gnu.org/licenses/>.
 
-import pickle, glob
+import pickle
+import glob
 import mutagen
 
+
 class local:
-    
+
     @classmethod
-    def dbcreate (self, file):
+    def db_create(self, file):
         '''Create a void database'''
         db = {}
-        dbfile = open(file, 'wb')
-        pickle.dump(db, dbfile)
-        dbfile.close()
+        db_file = open(file, 'wb')
+        pickle.dump(db, db_file)
+        db_file.close()
         return db
 
     @classmethod
-    def dbload (self, file):
+    def db_load(self, file):
         '''Load a database from a file'''
-        dbfile = open(file, 'rb')
-        db = pickle.load(dbfile)
-        dbfile.close()
+        db_file = open(file, 'rb')
+        db = pickle.load(db_file)
+        db_file.close()
         return db
 
     @classmethod
-    def dbsave (self, file, db):
+    def db_save(self, file, db):
         '''Save a database to a file'''
-        dbfile = open(file, 'wb')
-        pickle.dump(db, dbfile)
-        dbfile.close()
+        db_file = open(file, 'wb')
+        pickle.dump(db, db_file)
+        db_file.close()
 
     @classmethod
-    def dbimport (self, folder, db):
+    def db_import(self, folder, db):
         '''Import all mp3(for now) files from a folder to the database'''
-        
+
         for filename in glob.glob(folder + '/*.mp3'):
             try:
                 tags = MP3(filename, ID3=EasyID3)
@@ -55,20 +57,20 @@ class local:
                 print('ERROR : ' + filename + ' has no ID3 tag, skipping...')
             else:
                 db[filename] = tags
-        
+
         return db
 
 
 # only a temporary test of the local pickle database implementation
 if __name__ == '__main__':
     print('> creating database')
-    db = local.dbcreate('database')
+    db = local.db_create('database')
     print('> initializing database')
-    db['koolfy - kakalol.mp3'] = {'artist' : ['koolfy'], 'title' : ['kakalol']}
+    db['koolfy - kakalol.mp3'] = {'artist': ['koolfy'], 'title': ['kakalol']}
     print('> saving database')
-    local.dbsave('savedDatabase', db)
+    local.db_save('savedDatabase', db)
     print('> loading database')
-    db2 = local.dbload('savedDatabase')
+    db2 = local.db_load('savedDatabase')
 
     print('this is the database that was loaded : ')
     for key in db2:
@@ -76,7 +78,7 @@ if __name__ == '__main__':
         for (fname, fvalue) in db2[key].items():
             print('-- ' + fname + ' : ' + fvalue[0])
     print('\n> importing files')
-    db3 = local.dbimport('music', db2)
+    db3 = local.db_import('music', db2)
     print('this is the new database :')
     for key in db3:
         print('file name : ' + key)

@@ -19,32 +19,32 @@ import pygst
 pygst.require("0.10")
 import gst
 
+
 class playback:
-    
+
     def __init__(self):
-        
+
         #create pipeline (container for the playback chain)
         self.pipeline = gst.Pipeline("mypipeline")
-        
+
         #building that playback chain :
 
         #create source
         self.source = gst.element_factory_make("filesrc", "file-source")
         self.pipeline.add(self.source)
-        
+
         #create generic decoder
         self.decoder = gst.element_factory_make("decodebin2", "audio-decoder")
         #call OnDynamicPad to link it when pads are ready.
-        self.decoder.connect("new-decoded-pad", self.__OnDecoderDPad)
-        self.pipeline.add(self.decoder) 
+        self.decoder.connect("new-decoded-pad", self.__on_decoder_dynpad)
+        self.pipeline.add(self.decoder)
 
         #link source -> decoder
         self.source.link(self.decoder)
 
-        #create audio converter, can't link it to decoder yet. (of dynamic pads)
+        #create audio converter, can't link it to decoder yet. (dynamic pads)
         self.conv = gst.element_factory_make("audioconvert", "converter")
         self.pipeline.add(self.conv)
-
 
         #create audio sink
         self.sink = gst.element_factory_make("pulsesink", "pulseaudio-output")
@@ -54,25 +54,25 @@ class playback:
         self.conv.link(self.sink)
 
     #This does not need the mainloop and can be left in playback.py
-    def __OnDecoderDPad(self, dbin, pad, islast):
+    def __on_decoder_dynpad(self, dbin, pad, islast):
         '''called when decoder's dyn pads are ready'''
         pad.link(self.conv.get_pad("sink"))
 
     #Methods used to interact with playback
 
-    def SetSong(self, path):
+    def set_song(self, path):
         '''Sets a song into the gst pipeline'''
         self.source.set_property("location", path)
 
-    def SetPlay(self):
+    def set_play(self):
         self.pipeline.set_state(gst.STATE_PLAYING)
 
-    def SetPause(self):
+    def Set_pause(self):
         self.pipeline.set_state(gst.STATE_PAUSED)
 
-    def SetStop(self):
+    def set_stop(self):
         self.pipeline.set_state(gst.STATE_READY)
 
-    def SetClean(self):
+    def set_clean(self):
         '''Set the pipeline to a state where everything is cleared and free.'''
         self.pipeline.set_state(gst.STATE_NULL)
