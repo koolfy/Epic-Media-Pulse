@@ -67,7 +67,7 @@ class playback:
     def set_play(self):
         self.pipeline.set_state(gst.STATE_PLAYING)
 
-    def Set_pause(self):
+    def set_pause(self):
         self.pipeline.set_state(gst.STATE_PAUSED)
 
     def set_stop(self):
