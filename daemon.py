@@ -18,9 +18,14 @@
 import gobject
 gobject.threads_init()  # dynamic pads will not work without this.
 
+import louie  # event management library
+
 import pygst
 pygst.require("0.10")
 import gst
+
+import socket
+import select
 
 import playback
 
@@ -31,6 +36,10 @@ class daemon:
 
         #Create the gobject mainloop for bus events watching
         self.mainloop = gobject.MainLoop()
+
+        #Create the network interface
+        self.network = network()
+        gobject.timeout_add(300, self.network.check_input)
 
     def bus_init(self, player):
         '''Create event watching bus.'''
@@ -52,6 +61,96 @@ class daemon:
     def quit(self):
         '''Destroy the main loop'''
         self.mainloop.quit()
+
+
+class network:
+
+    def __init__(self, listen_sock=None, communication_sock=None):
+
+        if(listen_sock is None):
+            self.s = socket.socket()
+            self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.s.bind(('', 39888))  # 39888 is the synodic period of Jupiter
+            self.s.listen(1)
+
+        else:
+            self.s = listen_sock
+
+        self.socket = communication_sock
+
+    def __accept_incoming(self):
+        print "accepting socket..."
+        (self.socket, self.address) = self.s.accept()
+
+    def __close_incoming(self):
+        print "Gently closing socket."
+        self.socket.shutdown(2)
+        self.socket.close()
+        self.socket = None
+
+    def __close_listening(self):
+        print "Closing listening socket"
+        self.s.shutdown(2)
+        self.s.close()i
+        self.s = None
+
+    def __on_incoming(self):
+        buffer = self.socket.recv(4096)
+        if len(buffer) is 0:
+            print "Lost connection to socket."
+            self.__close_incoming()
+        self.__input_interpret(buffer)
+
+    def __input_interpret(self, buffer):
+        '''Interpret queries and act accordingly'''
+
+        print "received : " + buffer,
+
+        #not the actual protocol, only for testing purpose.
+        if buffer == "destroy\n":
+            print "Received a destroy query."
+            self.__close_listening()
+            self.__close_incoming()
+            daemon.quit()
+
+        if buffer == "pause\n":
+            print "Received a pause query."
+            player.set_pause()
+
+    def check_input(self):
+        '''Check if something is happenning and react.'''
+
+        potential_read = []
+        potential_write = []
+        potential_errors = []
+        timeout = 0.5
+
+        if self.s is None:
+            print "Cannot check sockets when none is created"
+            return True
+        else:
+            potential_read.append(self.s)
+
+        if(self.socket is not None):
+            potential_read.append(self.socket)
+            potential_write.append(self.socket)
+
+        rdy_read, rdy_write, error = select.select(potential_read,\
+                                                   potential_write,\
+                                                   potential_errors,\
+                                                   timeout)
+        if self.s in rdy_read:
+            print "connection request..."
+            self.__accept_incoming()
+
+        if self.socket in potential_write and self.socket not in rdy_write:
+            print "socket is not currently active."
+            return True
+
+        if self.socket in rdy_read and self.socket is not None:
+            self.__on_incoming()
+
+        return True
 
 #ugly testing, as usual...
 if __name__ == '__main__':
