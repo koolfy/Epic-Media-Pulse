@@ -18,8 +18,6 @@
 import gobject
 gobject.threads_init()  # dynamic pads will not work without this.
 
-import louie  # event management library
-
 import pygst
 pygst.require("0.10")
 import gst
