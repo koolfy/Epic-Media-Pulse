@@ -15,6 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Epic Media Pulse.  If not, see <http://www.gnu.org/licenses/>.
 
+import random
 
 class song:
     '''node structure for queue lists'''
@@ -34,8 +35,14 @@ class qlist:
     '''queue lists for the player to browse'''
 
     def __init__(self, list, style="normal"):
-        if style is "normal":
+        self.style = style
+        
+        if self.style is "normal":
             self.qlist_extrems = qlist.generate_from_list(list)
+        elif self.style is "shuffle":
+            random_list = list
+            random.shuffle(random_list)
+            self.qlist_extrems = qlist.generate_from_list(random_list)
         self.first = self.qlist_extrems[0]
         self.last = self.qlist_extrems[1]
         self.current = self.qlist_extrems[0]
@@ -110,3 +117,9 @@ if __name__ == '__main__':
         print qlist1.current.id
         is_prev = qlist1.prev()
 
+    print "\nrandom !\n"
+    qlist2 = qlist(testlist, "shuffle")
+    is_next2 = True
+    while (is_next2):
+        print qlist2.current.id
+        is_next2 = qlist2.next()
