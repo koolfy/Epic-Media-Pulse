@@ -28,29 +28,33 @@ import select
 import playback
 
 
-class daemon:
+class Daemon:
 
     def __init__(self):
+
+        #Create the playback interface
+        self.player = playback.Playback()
+        self.bus_init(self.player)
 
         #Create the gobject mainloop for bus events watching
         self.mainloop = gobject.MainLoop()
 
         #Create the network interface
-        self.network = network()
+        self.network = Network(self, self.player)
         gobject.timeout_add(300, self.network.check_input)
 
     def bus_init(self, player):
         '''Create event watching bus.'''
-        self.bus = player.pipeline.get_bus()
+        self.bus = self.player.pipeline.get_bus()
         self.bus.add_signal_watch()
-        self.bus.connect("message", self.__on_message, player)
+        self.bus.connect("message", self.__on_message, self.player)
 
     def __on_message(self, bus, message, player):
         type = message.type
         #testing handling, only cleaning nicely for now.
         if (type == gst.MESSAGE_EOS):
             print "File ended.\ncleaning."
-            player.set_clean()
+            self.player.set_clean()
 
     def run(self):
         '''Launch the main loop'''
@@ -61,9 +65,13 @@ class daemon:
         self.mainloop.quit()
 
 
-class network:
+class Network:
 
-    def __init__(self, listen_sock=None, communication_sock=None):
+    def __init__(self, daemon, player,\
+                 listen_sock=None, communication_sock=None):
+
+        self.daemon = daemon
+        self.player = player
 
         if(listen_sock is None):
             self.s = socket.socket()
@@ -89,7 +97,7 @@ class network:
     def __close_listening(self):
         print "Closing listening socket"
         self.s.shutdown(2)
-        self.s.close()i
+        self.s.close()
         self.s = None
 
     def __on_incoming(self):
@@ -109,11 +117,17 @@ class network:
             print "Received a destroy query."
             self.__close_listening()
             self.__close_incoming()
-            daemon.quit()
+            self.daemon.quit()
+
+        if buffer == "play\n":
+            print "Reiceived a play query"
+            filepath = "2001.ogg"  # Strauss - Also Sprach Zarathustra
+            self.player.set_song(filepath)
+            self.player.set_play()
 
         if buffer == "pause\n":
             print "Received a pause query."
-            player.set_pause()
+            self.player.set_pause()
 
     def check_input(self):
         '''Check if something is happenning and react.'''
@@ -150,13 +164,7 @@ class network:
 
         return True
 
-#ugly testing, as usual...
+# Launch EMP :)
 if __name__ == '__main__':
-    player = playback.playback()
-    filepath = "2001.ogg"  # Strauss - Also Sprach Zarathustra
-    player.set_song(filepath)
-
-    player.set_play()
-    daemon = daemon()
-    daemon.bus_init(player)
+    daemon = Daemon()
     daemon.run()

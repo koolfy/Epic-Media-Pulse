@@ -20,7 +20,7 @@ pygst.require("0.10")
 import gst
 
 
-class playback:
+class Playback:
 
     def __init__(self):
 

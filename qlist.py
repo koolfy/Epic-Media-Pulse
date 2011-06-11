@@ -17,7 +17,8 @@
 
 import random
 
-class song:
+
+class Song:
     '''node structure for queue lists'''
     def __init__(self, id=None, prev=None,\
                  next=None, status=None, belongs_to=None):
@@ -31,18 +32,18 @@ class song:
         return str(self.id)
 
 
-class qlist:
+class Qlist:
     '''queue lists for the player to browse'''
 
     def __init__(self, list, style="normal"):
         self.style = style
-        
+
         if self.style is "normal":
-            self.qlist_extrems = qlist.generate_from_list(list)
+            self.qlist_extrems = self.generate_from_list(list)
         elif self.style is "shuffle":
             random_list = list
             random.shuffle(random_list)
-            self.qlist_extrems = qlist.generate_from_list(random_list)
+            self.qlist_extrems = self.generate_from_list(random_list)
         self.first = self.qlist_extrems[0]
         self.last = self.qlist_extrems[1]
         self.current = self.qlist_extrems[0]
@@ -62,12 +63,12 @@ class qlist:
         else:
             self.current = self.current.prev
             return self.current
-    
+
     @classmethod
     def append_qlist(self, song, list):
         '''add a list of songs right next to an entry from the playlist'''
         next_node = song.next
-        qlist_extrems = qlist.generate_from_list(list)
+        qlist_extrems = self.generate_from_list(list)
         qlist_head = qlist_extrems[0]
         qlist_tail = qlist_extrems[1]
 
@@ -82,44 +83,12 @@ class qlist:
         previous = None
         for entry in list:
             if (previous == None):
-                head = song(entry, None, None)
-                head.next = song()
+                head = Song(entry, None, None)
+                head.next = Song()
                 previous = head
             else:
-                tail = song(entry, previous, None)
+                tail = Song(entry, previous, None)
                 previous.next = tail
                 previous = tail
 
         return (head, tail)
-
-
-#only to test the linked list implementation
-if __name__ == '__main__':
-    testlist = ["kaka", "lol", "proute", "toast"]
-    qlist1 = qlist(testlist)
-    is_next = True
-    while (is_next):
-        print qlist1.current.id
-        is_next = qlist1.next()
-
-    testlist2 = ["1", "2", "3"]
-    qlist1.prev()
-    qlist1.append_qlist(qlist1.current, testlist2)
-
-    print "\n testing append_qlist()\n"
-    is_next2 = True
-    while (is_next2):
-        print qlist1.current.id
-        is_next2 = qlist1.next()
-    print "\nreverse !\n"
-    is_prev = True
-    while (is_prev):
-        print qlist1.current.id
-        is_prev = qlist1.prev()
-
-    print "\nrandom !\n"
-    qlist2 = qlist(testlist, "shuffle")
-    is_next2 = True
-    while (is_next2):
-        print qlist2.current.id
-        is_next2 = qlist2.next()

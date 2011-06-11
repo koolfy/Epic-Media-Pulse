@@ -20,7 +20,7 @@ import glob
 import mutagen
 
 
-class local:
+class Local:
 
     @classmethod
     def db_create(self, file):
@@ -59,28 +59,3 @@ class local:
                 db[filename] = tags
 
         return db
-
-
-# only a temporary test of the local pickle database implementation
-if __name__ == '__main__':
-    print('> creating database')
-    db = local.db_create('database')
-    print('> initializing database')
-    db['koolfy - kakalol.mp3'] = {'artist': ['koolfy'], 'title': ['kakalol']}
-    print('> saving database')
-    local.db_save('savedDatabase', db)
-    print('> loading database')
-    db2 = local.db_load('savedDatabase')
-
-    print('this is the database that was loaded : ')
-    for key in db2:
-        print('file name : ' + key)
-        for (fname, fvalue) in db2[key].items():
-            print('-- ' + fname + ' : ' + fvalue[0])
-    print('\n> importing files')
-    db3 = local.db_import('music', db2)
-    print('this is the new database :')
-    for key in db3:
-        print('file name : ' + key)
-        for (fname, fvalue) in db3[key].items():
-            print('-- ' + fname + ' : ' + fvalue[0])
