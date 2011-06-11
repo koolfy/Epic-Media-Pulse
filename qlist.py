@@ -33,6 +33,29 @@ class song:
 class qlist:
     '''queue lists for the player to browse'''
 
+    def __init__(self, list, style="normal"):
+        if style is "normal":
+            self.qlist_extrems = qlist.generate_from_list(list)
+        self.first = self.qlist_extrems[0]
+        self.last = self.qlist_extrems[1]
+        self.current = self.qlist_extrems[0]
+
+    def next(self):
+        if self.current.next is None:
+            print "There is no entry after " + self.current.id
+            return False
+        else:
+            self.current = self.current.next
+            return self.current
+
+    def prev(self):
+        if self.current.prev is None:
+            print "There is no entry before " + self.current.id
+            return False
+        else:
+            self.current = self.current.prev
+            return self.current
+    
     @classmethod
     def append_qlist(self, song, list):
         '''add a list of songs right next to an entry from the playlist'''
@@ -66,22 +89,24 @@ class qlist:
 #only to test the linked list implementation
 if __name__ == '__main__':
     testlist = ["kaka", "lol", "proute", "toast"]
-    qlist1 = qlist.generate_from_list(testlist)[0]
-    while (qlist1.id != None):
-        print qlist1
-        if(qlist1.next != None):
-            qlist1 = qlist1.next
-        else:
-            break
+    qlist1 = qlist(testlist)
+    is_next = True
+    while (is_next):
+        print qlist1.current.id
+        is_next = qlist1.next()
 
     testlist2 = ["1", "2", "3"]
-    qlist2 = qlist.append_qlist(qlist.generate_from_list(testlist)[0],\
-                                testlist2)
+    qlist1.prev()
+    qlist1.append_qlist(qlist1.current, testlist2)
 
     print "\n testing append_qlist()\n"
-    while (qlist2.id != None):
-        print qlist2
-        if(qlist2.next != None):
-            qlist2 = qlist2.next
-        else:
-            break
+    is_next2 = True
+    while (is_next2):
+        print qlist1.current.id
+        is_next2 = qlist1.next()
+    print "\nreverse !\n"
+    is_prev = True
+    while (is_prev):
+        print qlist1.current.id
+        is_prev = qlist1.prev()
+
