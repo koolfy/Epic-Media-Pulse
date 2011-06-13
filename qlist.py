@@ -35,12 +35,14 @@ class Song:
 class Qlist:
     '''queue lists for the player to browse'''
 
-    def __init__(self, list, style="normal"):
-        self.style = style
+    def __init__(self, list, order="normal", mode="normal"):
+        
+        self.order = order
+        self.mode = mode
 
-        if self.style is "normal":
+        if self.order is "normal":
             self.qlist_extrems = self.generate_from_list(list)
-        elif self.style is "shuffle":
+        elif self.order is "shuffle":
             random_list = list
             random.shuffle(random_list)
             self.qlist_extrems = self.generate_from_list(random_list)

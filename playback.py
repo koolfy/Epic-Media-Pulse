@@ -19,10 +19,16 @@ import pygst
 pygst.require("0.10")
 import gst
 
+import qlist
+
 
 class Playback:
 
-    def __init__(self):
+    def __init__(sel, qlist=None):
+        #qlist is a tuple containing both qlist and list
+        # in order to generate a new qlist from list if needed.
+        self.qlist = qlist[0]
+        self.list = qlist[1]
 
         #create pipeline (container for the playback chain)
         self.pipeline = gst.Pipeline("mypipeline")
@@ -63,6 +69,40 @@ class Playback:
     def set_song(self, path):
         '''Sets a song into the gst pipeline'''
         self.source.set_property("location", path)
+
+    def set_prev(self):
+        prev = self.qlist.prev()
+        if not prev:
+            if self.qlist.mode == "repeat" and self.qlist.order == "shuffle":
+                self.qlist = qlist.Qlist(self.list, "shuffle")
+                self.qlist.current = self.qlist.last
+                self.set_song(self.qlist.current.id)
+                return True
+            
+            elif self.qlist.mode == "repeat" and self.qlist.order == "normal":
+                self.qlist.current = self.qlist.last
+                self.set_song(self.qlist.current.id)
+            else:
+                return False
+        else:
+            self.set_song(prev.id)
+            return True
+    
+    def set_next(self):
+        next = self.qlist.next()
+        if not next:
+            if self.qlist.mode == "repeat" and self.qlist.order == "shuffle":
+                self.qlist = qlist.Qlist(self.list, "shuffle")
+                self.set_song(self.qlist.current.id)
+                return True
+            
+            elif self.qlist.mode == "repeat" and self.qlist.order == "normal":
+                self.qlist.current = self.qlist.first
+                self.set_song(self.qlist.current.id)
+            else:
+                return False
+        else:
+            self.set_song(next.id)
 
     def set_play(self):
         self.pipeline.set_state(gst.STATE_PLAYING)
