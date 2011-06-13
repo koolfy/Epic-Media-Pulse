@@ -82,6 +82,7 @@ class Playback:
             elif self.qlist.mode == "repeat" and self.qlist.order == "normal":
                 self.qlist.current = self.qlist.last
                 self.set_song(self.qlist.current.id)
+                return True
             else:
                 return False
         else:
@@ -99,6 +100,7 @@ class Playback:
             elif self.qlist.mode == "repeat" and self.qlist.order == "normal":
                 self.qlist.current = self.qlist.first
                 self.set_song(self.qlist.current.id)
+                return True
             else:
                 return False
         else:
