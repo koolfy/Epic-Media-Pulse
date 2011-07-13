@@ -26,12 +26,13 @@ import socket
 import select
 
 import playback
+import qlist
 
 
 class Daemon:
 
     def __init__(self):
-
+        
         #Create the playback interface
         self.player = playback.Playback()
         self.bus_init(self.player)

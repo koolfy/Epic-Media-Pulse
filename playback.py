@@ -24,11 +24,15 @@ import qlist
 
 class Playback:
 
-    def __init__(sel, qlist=None):
+    def __init__(self, qlist=None):
         #qlist is a tuple containing both qlist and list
         # in order to generate a new qlist from list if needed.
-        self.qlist = qlist[0]
-        self.list = qlist[1]
+        #   this should be moved to a dedicated method
+        #   triggered by the daemon, as it makes no sense
+        #   in a constructor.
+        if(qlist is not None):
+            self.qlist = qlist[0]
+            self.list = qlist[1]
 
         #create pipeline (container for the playback chain)
         self.pipeline = gst.Pipeline("mypipeline")
