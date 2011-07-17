@@ -74,6 +74,12 @@ class Playback:
         '''Sets a song into the gst pipeline'''
         self.source.set_property("location", path)
 
+    def set_qlist(self, qlist):
+        '''Affects a qlist to the player. qlist is a tuple'''
+        self.qlist = qlist[0]
+        self.list = qlist[1]
+        self.set_song(self.qlist.current.id)
+
     def set_prev(self):
         prev = self.qlist.prev()
         if not prev:
@@ -111,6 +117,7 @@ class Playback:
             self.set_song(next.id)
 
     def set_play(self):
+        print "playing " + self.qlist.current.id
         self.pipeline.set_state(gst.STATE_PLAYING)
 
     def set_pause(self):

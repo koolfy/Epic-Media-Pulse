@@ -54,8 +54,14 @@ class Daemon:
         type = message.type
         #testing handling, only cleaning nicely for now.
         if (type == gst.MESSAGE_EOS):
-            print "File ended.\ncleaning."
-            self.player.set_clean()
+            print "File ended."
+            self.player.set_stop()
+            
+            if not self.player.set_next():
+                print "Playlist ended.\ncleaning."
+                self.player.set_clean()
+            else:
+                self.player.set_play()
 
     def run(self):
         '''Launch the main loop'''
@@ -120,10 +126,15 @@ class Network:
             self.__close_incoming()
             self.daemon.quit()
 
+        if buffer == "load qlist\n":
+            print "Loading generic testing queue list."
+            generic_list = ["2001.ogg"] # Strauss - Also Sprach Zarathustra
+            generic_qlist = (qlist.Qlist(generic_list), generic_list)
+            self.player.set_qlist(generic_qlist)
+
+        
         if buffer == "play\n":
             print "Reiceived a play query"
-            filepath = "2001.ogg"  # Strauss - Also Sprach Zarathustra
-            self.player.set_song(filepath)
             self.player.set_play()
 
         if buffer == "pause\n":
