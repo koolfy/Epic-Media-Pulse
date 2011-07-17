@@ -82,6 +82,11 @@ class Qlist:
     @classmethod
     def generate_from_list(self, list):
         '''generate a linked list from a regular list'''
+        if len(list) == 1:
+            head = Song(list[0], None, None)
+            tail = head
+            return (head, tail)
+        
         previous = None
         for entry in list:
             if (previous == None):
