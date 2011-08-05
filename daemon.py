@@ -28,6 +28,7 @@ import select
 import playback
 import qlist
 
+import sources
 
 class Daemon:
 
@@ -131,6 +132,20 @@ class Network:
             generic_list = ["2001.ogg"] # Strauss - Also Sprach Zarathustra
             generic_qlist = (qlist.Qlist(generic_list), generic_list)
             self.player.set_qlist(generic_qlist)
+        
+        if buffer == "db-create\n":
+            print "Creating void database."
+            self.daemon.db = sources.Local.db_create('database')
+
+
+        if buffer == "db-import\n":
+            print "Importing audio files in ./Music."
+            self.daemon.db = sources.Local.db_import('Music', self.daemon.db)
+            print('this is the new database :')
+            for key in self.daemon.db:
+               print('file name : ' + key)
+               for (fname, fvalue) in self.daemon.db[key].items():
+                    print('-- ' + fname + ' : ' + fvalue[0])
 
         
         if buffer == "play\n":
