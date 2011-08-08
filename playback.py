@@ -115,6 +115,7 @@ class Playback:
                 return False
         else:
             self.set_song(next.id)
+            return True
 
     def set_play(self):
         print "playing " + self.qlist.current.id
