@@ -137,7 +137,6 @@ class Network:
             print "Creating void database."
             self.daemon.db = sources.Local.db_create('database')
 
-
         if buffer == "db-import\n":
             print "Importing audio files in ./Music."
             self.daemon.db = sources.Local.db_import('Music', self.daemon.db)
@@ -155,6 +154,32 @@ class Network:
         if buffer == "pause\n":
             print "Received a pause query."
             self.player.set_pause()
+
+        if buffer == "next\n":
+            print "Reiceived a 'Next song' query."
+            if self.player.get_state_string() == "PLAYING":
+                was_playing = True
+            else:
+                 was_playing = False
+            self.player.set_stop()
+            if not self.player.set_next():
+                print "Playlist ended.\ncleaning."
+                self.player.set_clean()
+            elif was_playing:
+                self.player.set_play()
+
+        if buffer == "prev\n":
+            print "Reiceived a 'Previous song' query."
+            if self.player.get_state_string() == "PLAYING":
+                was_playing = True
+            else:
+                 was_playing = False
+            self.player.set_stop()
+            if not self.player.set_prev():
+                print "There is no previous entry in the playlist."
+            if was_playing:
+                self.player.set_play()
+
 
     def check_input(self):
         '''Check if something is happenning and react.'''

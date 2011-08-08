@@ -130,3 +130,15 @@ class Playback:
     def set_clean(self):
         '''Set the pipeline to a state where everything is cleared and free.'''
         self.pipeline.set_state(gst.STATE_NULL)
+
+    def get_state(self):
+        '''Return the state of the pipeline'''
+        real_state = self.pipeline.get_state()
+        return real_state
+
+    def get_state_string(self):
+        '''Return a string representation of the pipeline state'''
+        real_state = self.get_state()
+        #real_state is a tuple, we want the second value here.
+        string_state = gst.element_state_get_name(real_state[1])
+        return string_state
