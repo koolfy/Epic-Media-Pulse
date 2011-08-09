@@ -82,40 +82,42 @@ class Playback:
 
     def set_prev(self):
         prev = self.qlist.prev()
-        if not prev:
-            if self.qlist.mode == "repeat" and self.qlist.order == "shuffle":
-                self.qlist = qlist.Qlist(self.list, "shuffle")
-                self.qlist.current = self.qlist.last
-                self.set_song(self.qlist.current.id)
-                return True
 
-            elif self.qlist.mode == "repeat" and self.qlist.order == "normal":
-                self.qlist.current = self.qlist.last
-                self.set_song(self.qlist.current.id)
-                return True
+        if prev:
+            self.set_song(prev.id)
+            return True
 
-            return False
+        if self.qlist.mode == "repeat" and self.qlist.order == "shuffle":
+            self.qlist = qlist.Qlist(self.list, "shuffle")
+            self.qlist.current = self.qlist.last
+            self.set_song(self.qlist.current.id)
+            return True
 
-        self.set_song(prev.id)
-        return True
+        if self.qlist.mode == "repeat" and self.qlist.order == "normal":
+            self.qlist.current = self.qlist.last
+            self.set_song(self.qlist.current.id)
+            return True
+
+        return False
 
     def set_next(self):
         next = self.qlist.next()
-        if not next:
-            if self.qlist.mode == "repeat" and self.qlist.order == "shuffle":
-                self.qlist = qlist.Qlist(self.list, "shuffle")
-                self.set_song(self.qlist.current.id)
-                return True
 
-            elif self.qlist.mode == "repeat" and self.qlist.order == "normal":
-                self.qlist.current = self.qlist.first
-                self.set_song(self.qlist.current.id)
-                return True
+        if next:
+            self.set_song(next.id)
+            return True
 
-            return False
+        if self.qlist.mode == "repeat" and self.qlist.order == "shuffle":
+            self.qlist = qlist.Qlist(self.list, "shuffle")
+            self.set_song(self.qlist.current.id)
+            return True
 
-        self.set_song(next.id)
-        return True
+        if self.qlist.mode == "repeat" and self.qlist.order == "normal":
+            self.qlist.current = self.qlist.first
+            self.set_song(self.qlist.current.id)
+            return True
+
+        return False
 
     def set_play(self):
         print "playing " + self.qlist.current.id
