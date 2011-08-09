@@ -30,10 +30,11 @@ import qlist
 
 import sources
 
+
 class Daemon:
 
     def __init__(self):
-        
+
         #Create the playback interface
         self.player = playback.Playback()
         self.bus_init(self.player)
@@ -57,7 +58,7 @@ class Daemon:
         if (type == gst.MESSAGE_EOS):
             print "File ended."
             self.player.set_stop()
-            
+
             if not self.player.set_next():
                 print "Playlist ended.\ncleaning."
                 self.player.set_clean()
@@ -129,10 +130,10 @@ class Network:
 
         if buffer == "load qlist\n":
             print "Loading generic testing queue list."
-            generic_list = ["2001.ogg"] # Strauss - Also Sprach Zarathustra
+            generic_list = ["2001.ogg"]  # Strauss - Also Sprach Zarathustra
             generic_qlist = (qlist.Qlist(generic_list), generic_list)
             self.player.set_qlist(generic_qlist)
-        
+
         if buffer == "db-create\n":
             print "Creating void database."
             self.daemon.db = sources.Local.db_create('database')
@@ -142,11 +143,10 @@ class Network:
             self.daemon.db = sources.Local.db_import('Music', self.daemon.db)
             print('this is the new database :')
             for key in self.daemon.db:
-               print('file name : ' + key)
-               for (fname, fvalue) in self.daemon.db[key].items():
+                print('file name : ' + key)
+                for (fname, fvalue) in self.daemon.db[key].items():
                     print('-- ' + fname + ' : ' + fvalue[0])
 
-        
         if buffer == "play\n":
             print "Reiceived a play query"
             self.player.set_play()
@@ -160,7 +160,7 @@ class Network:
             if self.player.get_state_string() == "PLAYING":
                 was_playing = True
             else:
-                 was_playing = False
+                was_playing = False
             self.player.set_stop()
             if not self.player.set_next():
                 print "Playlist ended.\ncleaning."
@@ -173,13 +173,12 @@ class Network:
             if self.player.get_state_string() == "PLAYING":
                 was_playing = True
             else:
-                 was_playing = False
+                was_playing = False
             self.player.set_stop()
             if not self.player.set_prev():
                 print "There is no previous entry in the playlist."
             if was_playing:
                 self.player.set_play()
-
 
     def check_input(self):
         '''Check if something is happenning and react.'''

@@ -36,7 +36,7 @@ class Qlist:
     '''queue lists for the player to browse'''
 
     def __init__(self, list, order="normal", mode="normal"):
-        
+
         self.order = order
         self.mode = mode
 
@@ -86,7 +86,7 @@ class Qlist:
             head = Song(list[0], None, None)
             tail = head
             return (head, tail)
-        
+
         previous = None
         for entry in list:
             if (previous == None):

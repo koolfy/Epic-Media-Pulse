@@ -88,17 +88,17 @@ class Playback:
                 self.qlist.current = self.qlist.last
                 self.set_song(self.qlist.current.id)
                 return True
-            
+
             elif self.qlist.mode == "repeat" and self.qlist.order == "normal":
                 self.qlist.current = self.qlist.last
                 self.set_song(self.qlist.current.id)
                 return True
-            else:
-                return False
-        else:
-            self.set_song(prev.id)
-            return True
-    
+
+            return False
+
+        self.set_song(prev.id)
+        return True
+
     def set_next(self):
         next = self.qlist.next()
         if not next:
@@ -106,16 +106,16 @@ class Playback:
                 self.qlist = qlist.Qlist(self.list, "shuffle")
                 self.set_song(self.qlist.current.id)
                 return True
-            
+
             elif self.qlist.mode == "repeat" and self.qlist.order == "normal":
                 self.qlist.current = self.qlist.first
                 self.set_song(self.qlist.current.id)
                 return True
-            else:
-                return False
-        else:
-            self.set_song(next.id)
-            return True
+
+            return False
+
+        self.set_song(next.id)
+        return True
 
     def set_play(self):
         print "playing " + self.qlist.current.id
