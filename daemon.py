@@ -141,6 +141,7 @@ class Network:
         if buffer == "db-import\n":
             print "Importing audio files in ./Music."
             self.daemon.db = sources.Local.db_import('Music', self.daemon.db)
+            # Temporary debug code :
             print('this is the new database :')
             for key in self.daemon.db:
                 print('file name : ' + key)

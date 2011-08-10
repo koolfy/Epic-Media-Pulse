@@ -54,6 +54,7 @@ class Local:
         '''Import all mp3(for now) files from a folder to the database'''
 
         for filename in glob.glob(folder + '/*.mp3'):
+            print "Importing " + filename + " ..."
             try:
                 tags = MP3(filename, ID3=EasyID3)
             except mutagen.mp3.HeaderNotFoundError:
