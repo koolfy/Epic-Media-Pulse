@@ -83,6 +83,9 @@ class Playback:
         self.set_song(self.qlist.current.id)
 
     def set_prev(self):
+        '''switch to the prev song in the qlist'''
+        # THE STATE MUST BE SET TO STOP PRIOR TO CALLING THIS
+
         prev = self.qlist.prev()
 
         if prev:
@@ -103,6 +106,9 @@ class Playback:
         return False
 
     def set_next(self):
+        '''switch to the next song in the qlist'''
+        # THE STATE MUST BE SET TO STOP PRIOR TO CALLING THIS
+
         next = self.qlist.next()
 
         if next:
