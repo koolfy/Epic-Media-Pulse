@@ -78,6 +78,8 @@ class Playback:
         '''Affects a qlist to the player. qlist is a tuple'''
         self.qlist = qlist[0]
         self.list = qlist[1]
+        # state must be set to paused if another song was already set
+        self.set_stop()
         self.set_song(self.qlist.current.id)
 
     def set_prev(self):
