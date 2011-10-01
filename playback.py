@@ -57,7 +57,11 @@ class Playback:
         self.pipeline.add(self.conv)
 
         #create audio sink
-        self.sink = gst.element_factory_make("pulsesink", "pulseaudio-output")
+        try:
+            self.sink = gst.element_factory_make("pulsesink", "pulseaudio-output")
+        except gst.ElementNotFoundError:
+            print "PulseAudio not found, falling back to ALSA"
+            self.sink = gst.element_factory_make("alsasink", "alsa-output")
         self.pipeline.add(self.sink)
 
         #link audio converter -> sink
