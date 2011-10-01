@@ -61,11 +61,18 @@ class Playback:
             self.sink = gst.element_factory_make("pulsesink", "pulseaudio-output")
         except gst.ElementNotFoundError:
             print "PulseAudio not found, falling back to ALSA"
-            self.sink = gst.element_factory_make("alsasink", "alsa-output")
+            self.sink = gst.element_factory_make("alsasink", "sink")
         self.pipeline.add(self.sink)
 
-        #link audio converter -> sink
-        self.conv.link(self.sink)
+        #create volume
+        self.volume = gst.element_factory_make("volume", "volume")
+        self.pipeline.add(self.volume)
+
+        #link volume -> converter
+        self.conv.link(self.volume)
+
+        #link audio converter -> volune
+        self.volume.link(self.sink)
 
     #This does not need the mainloop and can be left in playback.py
     def __on_decoder_dynpad(self, dbin, pad, islast):
@@ -144,6 +151,10 @@ class Playback:
     def set_clean(self):
         '''Set the pipeline to a state where everything is cleared and free.'''
         self.pipeline.set_state(gst.STATE_NULL)
+
+    def set_volume(self, level):
+        '''Set the volume'''
+        self.volume.set_property('volume', float(level))
 
     def get_state(self):
         '''Return the state of the pipeline'''

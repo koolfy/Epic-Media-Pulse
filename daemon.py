@@ -130,7 +130,7 @@ class Network:
 
         if buffer == "load qlist\n":
             print "Loading generic testing queue list."
-            generic_list = ["2001.ogg"]  # Strauss - Also Sprach Zarathustra
+            generic_list = ["blink.mp3"]
             generic_qlist = (qlist.Qlist(generic_list), generic_list)
             self.player.set_qlist(generic_qlist)
 
@@ -157,7 +157,7 @@ class Network:
             self.player.set_pause()
 
         if buffer == "next\n":
-            print "Reiceived a 'Next song' query."
+            print "Received a 'Next song' query."
             if self.player.get_state_string() == "PLAYING":
                 was_playing = True
             else:
@@ -170,7 +170,7 @@ class Network:
                 self.player.set_play()
 
         if buffer == "prev\n":
-            print "Reiceived a 'Previous song' query."
+            print "Received a 'Previous song' query."
             if self.player.get_state_string() == "PLAYING":
                 was_playing = True
             else:
@@ -180,6 +180,12 @@ class Network:
                 print "There is no previous entry in the playlist."
             if was_playing:
                 self.player.set_play()
+
+        if "volume" in buffer:
+            print "Received a Volume query."
+            level = buffer.split(" ")[1][:-1] #split volume and \n
+            self.player.set_volume(level)
+            print "Volume set to %s" % float(level)
 
     def check_input(self):
         '''Check if something is happenning and react.'''
