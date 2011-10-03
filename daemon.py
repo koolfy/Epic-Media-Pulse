@@ -149,7 +149,7 @@ class Network:
                     print('-- ' + fname + ' : ' + fvalue[0])
 
         if buffer == "play\n":
-            print "Reiceived a play query"
+            print "Received a play query"
             self.player.set_play()
 
         if buffer == "pause\n":
@@ -185,7 +185,10 @@ class Network:
             print "Received a Volume query."
             level = buffer.split(" ")[1][:-1] #split volume and \n
             ret = self.player.set_volume(level)
-            print "Volume set to %s%%" % (ret*100)
+            if ret:
+                print "Volume set to %s%%" % (ret*100)
+            else:
+                print "Incorrect value for volume level"
 
     def check_input(self):
         '''Check if something is happenning and react.'''

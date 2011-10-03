@@ -154,7 +154,11 @@ class Playback:
 
     def set_volume(self, level):
         '''Set the volume, from 0 to 2 (200%)'''
-        level = float(level)
+        try:
+            level = float(level)
+        except ValueError: 
+            return False
+
         if level > 2: level = 2
         if level < 0: level = 0
         self.volume.set_property('volume', level)
