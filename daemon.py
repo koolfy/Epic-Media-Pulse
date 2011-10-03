@@ -130,7 +130,7 @@ class Network:
 
         if buffer == "load qlist\n":
             print "Loading generic testing queue list."
-            generic_list = ["blink.mp3"]
+            generic_list = ["2001.ogg"]  # Strauss - Also Sprach Zarathustra
             generic_qlist = (qlist.Qlist(generic_list), generic_list)
             self.player.set_qlist(generic_qlist)
 
@@ -184,8 +184,8 @@ class Network:
         if "volume" in buffer:
             print "Received a Volume query."
             level = buffer.split(" ")[1][:-1] #split volume and \n
-            self.player.set_volume(level)
-            print "Volume set to %s" % float(level)
+            ret = self.player.set_volume(level)
+            print "Volume set to %s%%" % (ret*100)
 
     def check_input(self):
         '''Check if something is happenning and react.'''
