@@ -190,6 +190,23 @@ class Network:
             else:
                 print "Incorrect value for volume level"
 
+        if "forward" in buffer:
+            print "Received a Forward query."
+            self.player.forward()
+
+        if "rewind" in buffer:
+            print "Received a Rewind query."
+            self.player.rewind()
+
+        if "goto" in buffer:
+            print "Received a goto query."
+            pos = buffer.split(" ")[1][:-1] #split goto and \n
+            ret = self.player.goto_position(pos)
+            if ret:
+                print "Position set to %s" % pos
+            else:
+                print "Incorrect value for position"
+
     def check_input(self):
         '''Check if something is happenning and react.'''
 

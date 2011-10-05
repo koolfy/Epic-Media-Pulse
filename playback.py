@@ -164,6 +164,43 @@ class Playback:
         self.volume.set_property('volume', level)
         return level
 
+    def goto_position(self, pos):
+        '''Go to position on current song (in ns)'''
+        try:
+            pos = int(pos)
+        except ValueError:
+            return False
+        self.pipeline.seek_simple(gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH, pos)
+        return True
+
+    def rewind(self):
+        '''Rewind on current song'''
+        pos = self.get_position()
+        seek = pos - (4 * 1000000000) # 4 secs
+        self.goto_position(seek)
+        return seek
+
+    def forward(self):
+        '''Forward on current song'''
+        pos = self.get_position()
+        seek = pos + (4 * 1000000000) # 4 secs
+        self.goto_position(seek)
+        return seek
+
+    def get_position(self):
+        '''Get current song position'''
+        pos = 0
+        try:
+            pos = self.pipeline.query_position(gst.FORMAT_TIME, None)[0]
+        except gst.QueryError:
+            print "Query error"
+        return pos
+
+    def get_length(self):
+        '''Get length for current song'''
+        dur_int = self.pipeline.query_duration(gst.FORMAT_TIME, None)[0]
+        return dur_int
+
     def get_state(self):
         '''Return the state of the pipeline'''
         real_state = self.pipeline.get_state()
