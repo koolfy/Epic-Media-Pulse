@@ -159,6 +159,10 @@ class Network:
             print "Received a pause query."
             self.player.set_pause()
 
+        if buffer == "stop\n":
+            print "Received a stop query"
+            self.player.set_stop()
+
         if buffer == "next\n":
             print "Received a 'Next song' query."
             if self.player.get_state_string() == "PLAYING":
