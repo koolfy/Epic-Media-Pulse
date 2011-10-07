@@ -190,11 +190,11 @@ class Network:
             else:
                 print "Incorrect value for volume level"
 
-        if "forward" in buffer:
+        if buffer == "forward\n":
             print "Received a Forward query."
             self.player.forward()
 
-        if "rewind" in buffer:
+        if buffer == "rewind\n":
             print "Received a Rewind query."
             self.player.rewind()
 
