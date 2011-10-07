@@ -199,14 +199,14 @@ class Network:
 
         if buffer == "forward\n":
             print "Received a Forward query."
-            if self.player.get_state_string() == "PLAYING":
+            if self.player.get_state_string() in ["PLAYING", "PAUSED"]:
                 self.player.forward()
             else:
                 print "Cannot forward if not playing"
 
         if buffer == "rewind\n":
             print "Received a Rewind query."
-            if self.player.get_state_string() == "PLAYING":
+            if self.player.get_state_string() in ["PLAYING", "PAUSED"]:
                 self.player.rewind()
             else:
                 print "Cannot rewind if not playing"
