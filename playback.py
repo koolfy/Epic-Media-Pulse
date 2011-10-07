@@ -176,14 +176,29 @@ class Playback:
     def rewind(self):
         '''Rewind on current song'''
         pos = self.get_position()
-        seek = pos - (4 * 1000000000) # 4 secs
+
+        if not pos:
+            return False
+
+        if (pos - (4 * 1000000000) < 0 ):
+            seek = 0
+        else:
+            seek = pos - (4 * 1000000000) # 4 secs
         self.goto_position(seek)
         return seek
 
     def forward(self):
         '''Forward on current song'''
         pos = self.get_position()
-        seek = pos + (4 * 1000000000) # 4 secs
+        len = self.get_length()  # avoid calling a gst query twice
+
+        if not (pos and len):
+            return False
+
+        if ( pos + (4 * 1000000000) > len ):
+            seek = len
+        else:
+            seek = pos + (4 * 1000000000) # 4 secs
         self.goto_position(seek)
         return seek
 
