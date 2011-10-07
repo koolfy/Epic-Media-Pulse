@@ -190,12 +190,16 @@ class Network:
 
         if "volume" in buffer:
             print "Received a Volume query."
-            level = buffer.split(" ")[1][:-1] #split volume and \n
-            ret = self.player.set_volume(level)
-            if ret:
-                print "Volume set to %s%%" % (ret*100)
+            try:
+                level = buffer.split(" ")[1][:-1] #split volume and \n
+            except IndexError:
+                print "incorrect number of arguments given."
             else:
-                print "Incorrect value for volume level"
+                ret = self.player.set_volume(level)
+                if ret:
+                    print "Volume set to %s%%" % (ret*100)
+                else:
+                    print "Incorrect value for volume level"
 
         if buffer == "forward\n":
             print "Received a Forward query."
@@ -217,12 +221,16 @@ class Network:
         if "goto" in buffer:
             print "Received a goto query."
             if self.player.get_state_string() in ["PLAYING", "PAUSED"]:
-                pos = buffer.split(" ")[1][:-1] #split goto and \n
-                ret = self.player.goto_position(pos)
-                if ret:
-                    print "Position set to %s" % pos
+                try:
+                    pos = buffer.split(" ")[1][:-1] #split goto and \n
+                except IndexError:
+                    print "incorrect number of arguments given."
                 else:
-                    print "Incorrect value for position"
+                    ret = self.player.goto_position(pos)
+                    if ret:
+                        print "Position set to %s" % pos
+                    else:
+                        print "Incorrect value for position"
             else:
                 print "Cannot seek if not playing"
 
