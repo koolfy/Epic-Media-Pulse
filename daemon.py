@@ -216,12 +216,15 @@ class Network:
  
         if "goto" in buffer:
             print "Received a goto query."
-            pos = buffer.split(" ")[1][:-1] #split goto and \n
-            ret = self.player.goto_position(pos)
-            if ret:
-                print "Position set to %s" % pos
+            if self.player.get_state_string() in ["PLAYING", "PAUSED"]:
+                pos = buffer.split(" ")[1][:-1] #split goto and \n
+                ret = self.player.goto_position(pos)
+                if ret:
+                    print "Position set to %s" % pos
+                else:
+                    print "Incorrect value for position"
             else:
-                print "Incorrect value for position"
+                print "Cannot seek if not playing"
 
     def check_input(self):
         '''Check if something is happenning and react.'''
