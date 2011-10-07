@@ -194,11 +194,16 @@ class Playback:
             pos = self.pipeline.query_position(gst.FORMAT_TIME, None)[0]
         except gst.QueryError:
             print "Query error"
+            return False
         return pos
 
     def get_length(self):
         '''Get length for current song'''
-        dur_int = self.pipeline.query_duration(gst.FORMAT_TIME, None)[0]
+        try:
+            dur_int = self.pipeline.query_duration(gst.FORMAT_TIME, None)[0]
+        except gst.QueryError:
+            print "Query error"
+            return False
         return dur_int
 
     def get_state(self):
