@@ -150,7 +150,10 @@ class Network:
 
         if buffer == "play\n":
             print "Received a play query"
-            self.player.set_play()
+            if self.player.get_state_string() != "NULL":
+                self.player.set_play()
+            else: 
+                print "Not ready to play"
 
         if buffer == "pause\n":
             print "Received a pause query."
