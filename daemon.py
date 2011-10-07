@@ -211,6 +211,9 @@ class Network:
             else:
                 print "Cannot rewind if not playing"
 
+        if buffer == "state\n":
+            print self.player.get_state_string()
+ 
         if "goto" in buffer:
             print "Received a goto query."
             pos = buffer.split(" ")[1][:-1] #split goto and \n
