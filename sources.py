@@ -18,13 +18,15 @@
 import pickle
 import glob
 import mutagen
+import mimetypes
 
-from mutagen.mp3 import MP3
-from mutagen.easyid3 import EasyID3
-
+SUPPORTED_TYPES = [
+    'audio/mpeg',
+    'audio/ogg',
+    'audio/flac',
+    ]
 
 class Local:
-
     @classmethod
     def db_create(self, file):
         '''Create a void database'''
@@ -51,13 +53,18 @@ class Local:
 
     @classmethod
     def db_import(self, folder, db):
-        '''Import all mp3(for now) files from a folder to the database'''
+        '''Import all files from a folder to the database'''
+        for filename in glob.glob(folder + '/*'):
+            filetype = mimetypes.guess_type(filename)[0]
+            
+            if filetype not in SUPPORTED_TYPES:
+                print "File %s unsupported, passing..." % filename
+                continue
 
-        for filename in glob.glob(folder + '/*.mp3'):
             print "Importing " + filename + " ..."
-            try:
-                tags = MP3(filename, ID3=EasyID3)
-            except mutagen.mp3.HeaderNotFoundError:
+            
+            tags = mutagen.File(filename, easy=True)
+            if tags == None:
                 print('ERROR : ' + filename + ' has no ID3 tag, skipping...')
             else:
                 db[filename] = tags
