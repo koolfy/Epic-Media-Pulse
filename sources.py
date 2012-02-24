@@ -15,7 +15,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Epic Media Pulse.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import os
 import glob
 import mutagen
@@ -38,10 +37,6 @@ class Local:
             self.db = sqlite3.connect(self.directory)
             self.cursor = self.db.cursor()
         
-        self.maxSongId = 0
-        self.maxArtistId = 0
-        self.maxAlbumId= 0
-
     @classmethod
     def db_create(self, filename):
         '''Create a void database'''
@@ -65,13 +60,20 @@ class Local:
     @classmethod
     def db_import(self, folder):
         '''Import all files from a folder to the database'''
+        
+        # all variables needed to do necessary checks before importating
+        self.maxSongId = 0
+        self.maxArtistId = 0
+        self.maxAlbumId= 0
         self.songList = []
         self.artistList = []
         self.albumList = []
-        self.albumIdList = []
         self.artistIdList = []
+        self.albumIdList = []
         self.artistId = 0
         self.albumId= 0
+        
+        # form lists of the tables, needed to compare later with what we import
         dblist = ['song', 'artist', 'album']
         for db in dblist:
             self.cursor.execute('''select * from ''' + db)
@@ -84,6 +86,7 @@ class Local:
                     self.albumList.append(entry[1])
                     self.albumIdList.append(entry[0])
         
+        # get present max values for ids in the 3 tables
         self.cursor.execute('''select * from song order by 1 desc limit 1''')
         for entry in self.cursor:
                 self.maxSongId = entry[0]
@@ -96,7 +99,7 @@ class Local:
         for entry in self.cursor:
                 self.maxAlbumId = entry[0]
 
-
+        # begin the actual importation
         for filename in glob.glob(folder + '/*'):
             filetype = mimetypes.guess_type(filename)[0]
             
@@ -116,6 +119,8 @@ class Local:
                     + ' skipping...')
                 continue
             else:
+                # if artist already in artist table, link to it
+                # if not, create it.
                 if (tags['artist'][0] in self.artistList):
                     index = self.artistList.index(tags['artist'][0])
                     self.artistId = self.artistIdList[index]
@@ -126,6 +131,8 @@ class Local:
                                         + '''VALUES (?, ?)''', t)
                     self.artistId = self.maxArtistId
 
+                # if album already in album table, link to it
+                # if not, create it.
                 if (tags['album'][0] in self.albumList):
                     index = self.albumList.index(tags['album'][0])
                     self.albumId = self.albumIdList[index]
@@ -137,6 +144,7 @@ class Local:
                                         '''(?, ?, 0, 0)''', t)
                     self.albumId = self.maxAlbumId
 
+                # now we can add our song with the appropriate references.
                 self.maxSongId = self.maxSongId +1
                 t = [self.maxSongId, tags['title'][0], filename,\
                      self.albumId, self.artistId ]
