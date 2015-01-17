@@ -91,7 +91,6 @@ class Qlist:
         for entry in list:
             if (previous == None):
                 head = Song(entry, None, None)
-                head.next = Song()
                 previous = head
             else:
                 tail = Song(entry, previous, None)
